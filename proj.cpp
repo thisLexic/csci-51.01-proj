@@ -7,7 +7,8 @@
 using namespace std;
  
 /* Defines Process struct */
-struct Point3D {
+struct Process {
+    int id;
     int arrivalTime;
     int burstTime;
     int priorityValue;
@@ -17,6 +18,9 @@ struct Point3D {
     int responseTime = 0;
 };
 
+int fcfs(Process process_list[]){
+    return process_list[0].arrivalTime;
+};
 
 /* Main Program */
 int main()
@@ -26,12 +30,12 @@ int main()
     cin >> t;
     
     
-    cin.clear();
-    cin.ignore(1000, '\n'); 
 
     /* Program Loop */
     for (int i = 0; i < t; i++) {
         /* Initializes and declares n for each test case */
+        cin.clear();
+        cin.ignore(1000, '\n'); 
         string s;
         int delimiter_position;
         int processes_count;
@@ -42,6 +46,26 @@ int main()
         delimiter_position = s.find(" ");
         processes_count = stoi(s.substr(0, delimiter_position));
         algorithm = s.substr(delimiter_position + 1);
+
+
+        Process process_list[processes_count];
+        
+        for (int j = 1; j <= processes_count; j++) {
+            Process process;
+
+            cin>>process.arrivalTime;
+            cin>>process.burstTime;
+            cin>>process.priorityValue;
+            process.id = j;
+
+            process_list[j-1] = process;
+        }
+
+        cout << j << ". " << algorithm << "\n";
+
+        if (algorithm == "FCFS") {
+            cout << fcfs(process_list) << "\n";
+        }
 
 
     }
