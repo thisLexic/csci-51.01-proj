@@ -18,8 +18,22 @@ struct Process {
     int responseTime = 0;
 };
 
-int fcfs(Process process_list[]){
-    return process_list[0].arrivalTime;
+Process getSmallestArrivalTime(Process process_list[], int processes_count){
+    Process shortest = process_list[0];
+    Process tryShortest;
+    
+    for( int i = 1; i < processes_count; i = i + 1 ) {
+        tryShortest = process_list[i];
+        if ( tryShortest.arrivalTime < shortest.arrivalTime ) {
+            shortest = tryShortest;
+        }
+    }
+    
+    return shortest;
+};
+
+int fcfs(Process process_list[], int processes_count){
+    return getSmallestArrivalTime(process_list, processes_count).arrivalTime;
 };
 
 /* Main Program */
@@ -61,10 +75,11 @@ int main()
             process_list[j-1] = process;
         }
 
-        cout << j << ". " << algorithm << "\n";
+        cout << i + 1 << ". " << algorithm << "\n";
 
         if (algorithm == "FCFS") {
-            cout << fcfs(process_list) << "\n";
+            cout << fcfs(process_list, processes_count) << "\n";
+            
         }
 
 
