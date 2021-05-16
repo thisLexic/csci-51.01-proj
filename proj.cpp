@@ -18,6 +18,11 @@ struct Process {
     int waitTime = 0;
     int turnAroundTime = 0;
     int responseTime = 0;
+
+    bool operator < (const Process& str) const
+    {
+        return (id < str.id);
+    }
 };
 
 Process getSmallestArrivalTime(vector<Process> process_list, int processes_count){
@@ -50,7 +55,18 @@ int getSmallestArrivalTimeId(vector<Process> process_list, int processes_count){
     return value;
 };
 
-int fcfs(vector<Process> process_list, int processes_count){
+void getDetails(vector<Process> process_list, int processes_count){
+    sort(process_list.begin(), process_list.end());
+    Process p;
+    cout << "Waiting Times:" << "\n";
+    for( int i = 0; i < processes_count; i = i + 1 ) {
+        p = process_list[i];
+        cout << "Process " << p.id << ": " << p.waitTime << "ns\n";
+    }
+}
+
+vector<Process> fcfs(vector<Process> process_list, int processes_count){
+    vector<Process> return_process_list;
     Process p;
     int pi;
     int elapsedTime = 0;
@@ -66,20 +82,27 @@ int fcfs(vector<Process> process_list, int processes_count){
             startTime = elapsedTime;
         }
 
+        if ( p.arrivalTime < elapsedTime ) {
+            p.waitTime = elapsedTime - p.arrivalTime;
+        }
+        else {
+            p.waitTime = 0;
+        }
+
         cout << startTime << " " << p.id << " " << p.burstTime << "X\n";
         elapsedTime = p.burstTime + startTime;
         totalBurstTime = totalBurstTime + p.burstTime;
         process_list.erase(process_list.begin() + pi);
 
-
+        return_process_list.push_back(p);
     }
 
     cout << "Total time elapsed:  " << elapsedTime << "ns" << "\n";
     cout << "Total CPU burst time:  " << totalBurstTime << "ns" << "\n";
-    cout << "CPU Utilization:  " << static_cast<float>(totalBurstTime)/static_cast<float>(elapsedTime) << "%" << "\n";
+    cout << "CPU Utilization:  " << (static_cast<float>(totalBurstTime)/static_cast<float>(elapsedTime))*100 << "%" << "\n";
     cout << "Throughput:  " << static_cast<float>(processes_count)/static_cast<float>(elapsedTime) << " processes/ns" << "\n";
 
-    return -1;
+    return return_process_list;
 };
 
 /* Main Program */
@@ -124,7 +147,9 @@ int main()
         cout << i + 1 << ". " << algorithm << "\n";
 
         if (algorithm == "FCFS") {
-            fcfs(process_list, processes_count);
+            vector<Process> return_process_list;
+            return_process_list = fcfs(process_list, processes_count);
+            getDetails(return_process_list, processes_count);
             // cout << fcfs(process_list, processes_count) << "\n";
             
         }
