@@ -58,11 +58,16 @@ int getSmallestArrivalTimeId(vector<Process> process_list, int processes_count){
 void getDetails(vector<Process> process_list, int processes_count){
     sort(process_list.begin(), process_list.end());
     Process p;
+    int totalWaitingTime = 0;
     cout << "Waiting Times:" << "\n";
     for( int i = 0; i < processes_count; i = i + 1 ) {
         p = process_list[i];
         cout << "Process " << p.id << ": " << p.waitTime << "ns\n";
+        totalWaitingTime = totalWaitingTime + p.waitTime;
     }
+    cout << "Average waiting time: " << static_cast<float>(totalWaitingTime)/static_cast<float>(processes_count) << "ns\n";
+
+    
 }
 
 vector<Process> fcfs(vector<Process> process_list, int processes_count){
