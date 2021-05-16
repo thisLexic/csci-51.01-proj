@@ -59,6 +59,9 @@ void getDetails(vector<Process> process_list, int processes_count){
     sort(process_list.begin(), process_list.end());
     Process p;
     int totalWaitingTime = 0;
+    int totalTurnAroundTime = 0;
+    int totalResponseTime = 0;
+
     cout << "Waiting Times:" << "\n";
     for( int i = 0; i < processes_count; i = i + 1 ) {
         p = process_list[i];
@@ -67,6 +70,21 @@ void getDetails(vector<Process> process_list, int processes_count){
     }
     cout << "Average waiting time: " << static_cast<float>(totalWaitingTime)/static_cast<float>(processes_count) << "ns\n";
 
+    cout << "Turnaround times:" << "\n";
+    for( int i = 0; i < processes_count; i = i + 1 ) {
+        p = process_list[i];
+        cout << "Process " << p.id << ": " << p.turnAroundTime << "ns\n";
+        totalTurnAroundTime = totalTurnAroundTime + p.turnAroundTime;
+    }
+    cout << "Average turnaround time: " << static_cast<float>(totalTurnAroundTime)/static_cast<float>(processes_count) << "ns\n";
+
+    cout << "Response times:" << "\n";
+    for( int i = 0; i < processes_count; i = i + 1 ) {
+        p = process_list[i];
+        cout << "Process " << p.id << ": " << p.responseTime << "ns\n";
+        totalResponseTime = totalResponseTime + p.responseTime;
+    }
+    cout << "Average response time: " << static_cast<float>(totalResponseTime)/static_cast<float>(processes_count) << "ns\n";
     
 }
 
@@ -93,6 +111,9 @@ vector<Process> fcfs(vector<Process> process_list, int processes_count){
         else {
             p.waitTime = 0;
         }
+
+        p.turnAroundTime = p.waitTime + p.burstTime;
+        p.responseTime = p.waitTime;
 
         cout << startTime << " " << p.id << " " << p.burstTime << "X\n";
         elapsedTime = p.burstTime + startTime;
