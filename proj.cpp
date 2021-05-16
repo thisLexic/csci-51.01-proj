@@ -53,14 +53,26 @@ int getSmallestArrivalTimeId(vector<Process> process_list, int processes_count){
 int fcfs(vector<Process> process_list, int processes_count){
     Process p;
     int pi;
+    int elapsedTime = 0;
+    int startTime;
     for( int i = 0; i < processes_count; i = i + 1 ) {
         p = getSmallestArrivalTime(process_list, processes_count - i);
         pi = getSmallestArrivalTimeId(process_list, processes_count - i);
-        cout << p.arrivalTime << "\n";
+        if (p.arrivalTime > elapsedTime){
+            startTime = p.arrivalTime;
+        }
+        else {
+            startTime = elapsedTime;
+        }
+
+        cout << startTime << " " << p.id << " " << p.burstTime << "X\n";
+        elapsedTime = p.burstTime + startTime;
         process_list.erase(process_list.begin() + pi);
+
+
     }
 
-    return -1;
+    return elapsedTime;
 };
 
 /* Main Program */
