@@ -3,6 +3,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <string>
+#include <algorithm>
+#include <vector>
 
 using namespace std;
  
@@ -18,7 +20,7 @@ struct Process {
     int responseTime = 0;
 };
 
-Process getSmallestArrivalTime(Process process_list[], int processes_count){
+Process getSmallestArrivalTime(vector<Process> process_list, int processes_count){
     Process shortest = process_list[0];
     Process tryShortest;
     
@@ -32,8 +34,33 @@ Process getSmallestArrivalTime(Process process_list[], int processes_count){
     return shortest;
 };
 
-int fcfs(Process process_list[], int processes_count){
-    return getSmallestArrivalTime(process_list, processes_count).arrivalTime;
+int getSmallestArrivalTimeId(vector<Process> process_list, int processes_count){
+    Process shortest = process_list[0];
+    Process tryShortest;
+    int value = 0;
+    
+    for( int i = 1; i < processes_count; i = i + 1 ) {
+        tryShortest = process_list[i];
+        if ( tryShortest.arrivalTime < shortest.arrivalTime ) {
+            shortest = tryShortest;
+            value = i;
+        }
+    }
+    
+    return value;
+};
+
+int fcfs(vector<Process> process_list, int processes_count){
+    Process p;
+    int pi;
+    for( int i = 0; i < processes_count; i = i + 1 ) {
+        p = getSmallestArrivalTime(process_list, processes_count - i);
+        pi = getSmallestArrivalTimeId(process_list, processes_count - i);
+        cout << p.arrivalTime << "\n";
+        process_list.erase(process_list.begin() + pi);
+    }
+
+    return -1;
 };
 
 /* Main Program */
@@ -62,7 +89,7 @@ int main()
         algorithm = s.substr(delimiter_position + 1);
 
 
-        Process process_list[processes_count];
+        vector<Process> process_list;
         
         for (int j = 1; j <= processes_count; j++) {
             Process process;
@@ -72,7 +99,7 @@ int main()
             cin>>process.priorityValue;
             process.id = j;
 
-            process_list[j-1] = process;
+            process_list.push_back(process);
         }
 
         cout << i + 1 << ". " << algorithm << "\n";
