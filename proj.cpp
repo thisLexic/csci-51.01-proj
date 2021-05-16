@@ -54,6 +54,7 @@ int fcfs(vector<Process> process_list, int processes_count){
     Process p;
     int pi;
     int elapsedTime = 0;
+    int totalBurstTime = 0;
     int startTime;
     for( int i = 0; i < processes_count; i = i + 1 ) {
         p = getSmallestArrivalTime(process_list, processes_count - i);
@@ -67,12 +68,18 @@ int fcfs(vector<Process> process_list, int processes_count){
 
         cout << startTime << " " << p.id << " " << p.burstTime << "X\n";
         elapsedTime = p.burstTime + startTime;
+        totalBurstTime = totalBurstTime + p.burstTime;
         process_list.erase(process_list.begin() + pi);
 
 
     }
 
-    return elapsedTime;
+    cout << "Total time elapsed:  " << elapsedTime << "ns" << "\n";
+    cout << "Total CPU burst time:  " << totalBurstTime << "ns" << "\n";
+    cout << "CPU Utilization:  " << static_cast<float>(totalBurstTime)/static_cast<float>(elapsedTime) << "%" << "\n";
+    cout << "Throughput:  " << static_cast<float>(processes_count)/static_cast<float>(elapsedTime) << " processes/ns" << "\n";
+
+    return -1;
 };
 
 /* Main Program */
@@ -117,7 +124,8 @@ int main()
         cout << i + 1 << ". " << algorithm << "\n";
 
         if (algorithm == "FCFS") {
-            cout << fcfs(process_list, processes_count) << "\n";
+            fcfs(process_list, processes_count);
+            // cout << fcfs(process_list, processes_count) << "\n";
             
         }
 
