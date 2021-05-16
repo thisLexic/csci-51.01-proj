@@ -25,6 +25,7 @@ struct Process {
     }
 };
 
+// get the Process with the smallest arrival time
 Process getSmallestArrivalTime(vector<Process> process_list, int processes_count){
     Process shortest = process_list[0];
     Process tryShortest;
@@ -39,6 +40,7 @@ Process getSmallestArrivalTime(vector<Process> process_list, int processes_count
     return shortest;
 };
 
+// get the Id of the Process with the smallest arrival time
 int getSmallestArrivalTimeId(vector<Process> process_list, int processes_count){
     Process shortest = process_list[0];
     Process tryShortest;
@@ -55,6 +57,7 @@ int getSmallestArrivalTimeId(vector<Process> process_list, int processes_count){
     return value;
 };
 
+// use for printing out the waiting time, turnaround time, and response time
 void getDetails(vector<Process> process_list, int processes_count){
     sort(process_list.begin(), process_list.end());
     Process p;
@@ -88,6 +91,8 @@ void getDetails(vector<Process> process_list, int processes_count){
     
 }
 
+// prints out the running statistics as well as the total time elapsed, total CPU burst, cpu utilization, and throughput
+// it returns the vector with the right values for waiting time, turnaround time, and response time
 vector<Process> fcfs(vector<Process> process_list, int processes_count){
     vector<Process> return_process_list;
     Process p;
@@ -142,7 +147,6 @@ int main()
 
     /* Program Loop */
     for (int i = 0; i < t; i++) {
-        /* Initializes and declares n for each test case */
         cin.clear();
         cin.ignore(1000, '\n'); 
         string s;
@@ -174,10 +178,10 @@ int main()
 
         if (algorithm == "FCFS") {
             vector<Process> return_process_list;
+            // prints out running statistics as well as the total time elapsed, total CPU burst, cpu utilization, and throughput
             return_process_list = fcfs(process_list, processes_count);
+            // use for printing out the waiting time, turnaround time, and response time
             getDetails(return_process_list, processes_count);
-            // cout << fcfs(process_list, processes_count) << "\n";
-            
         }
 
 
