@@ -57,6 +57,70 @@ int getSmallestArrivalTimeId(vector<Process> process_list, int processes_count){
     return value;
 };
 
+// get the Process with the smallest arrival time and in the case of ties, smallest burst time
+Process getSmallestArrivalTimeBurst(vector<Process> process_list, int processes_count, int elapsed){
+    Process shortest = process_list[0];
+    Process tryShortest;
+    
+    for( int i = 1; i < processes_count; i = i + 1 ) {
+        tryShortest = process_list[i];
+        if ( tryShortest.arrivalTime <= elapsed && tryShortest.burstTime < shortest.burstTime ) {
+            shortest = tryShortest;
+        }
+    }
+    
+    return shortest;
+};
+
+// get the id of the Process with the smallest arrival time and in the case of ties, smallest burst time
+int getSmallestArrivalTimeIdBurst(vector<Process> process_list, int processes_count, int elapsed){
+    Process shortest = process_list[0];
+    Process tryShortest;
+    int value = 0;
+    
+    for( int i = 1; i < processes_count; i = i + 1 ) {
+        tryShortest = process_list[i];
+        if ( tryShortest.arrivalTime <= elapsed && tryShortest.burstTime < shortest.burstTime ) {
+            shortest = tryShortest;
+            value = i;
+        }
+    }
+    
+    return value;
+};
+ 
+// get the Process with the smallest arrival time and in the case of ties, smallest burst time
+Process getSmallestBurstTime(vector<Process> process_list, int processes_count, int elapsed){
+    Process shortest = process_list[0];
+    Process tryShortest;
+    
+    for( int i = 1; i < processes_count; i = i + 1 ) {
+        tryShortest = process_list[i];
+        if ( tryShortest.burstTime < shortest.burstTime ) {
+            shortest = tryShortest;
+        }
+    }
+    
+    return shortest;
+};
+
+// get the id of the Process with the smallest arrival time and in the case of ties, smallest burst time
+int getSmallestBurstTimeId(vector<Process> process_list, int processes_count, int elapsed){
+    Process shortest = process_list[0];
+    Process tryShortest;
+    int value = 0;
+    
+    for( int i = 1; i < processes_count; i = i + 1 ) {
+        tryShortest = process_list[i];
+        if ( tryShortest.burstTime < shortest.burstTime ) {
+            shortest = tryShortest;
+            value = i;
+        }
+    }
+    
+    return value;
+};
+
 // use for printing out the waiting time, turnaround time, and response time
 void getDetails(vector<Process> process_list, int processes_count){
     sort(process_list.begin(), process_list.end());
@@ -136,6 +200,95 @@ vector<Process> fcfs(vector<Process> process_list, int processes_count){
     return return_process_list;
 };
 
+// prints out the running statistics as well as the total time elapsed, total CPU burst, cpu utilization, and throughput
+// it returns the vector with the right values for waiting time, turnaround time, and response time
+vector<Process> sjf(vector<Process> process_list, int processes_count){
+    vector<Process> return_process_list;
+    Process p;
+    int pi;
+    int elapsedTime = 0;
+    int totalBurstTime = 0;
+    int startTime = 0;
+    int completed = 0;
+    for( int i = 0; i < processes_count; i = i + 1 ) {
+        p = getSmallestArrivalTimeBurst(process_list, processes_count - i, elapsedTime);
+        pi = getSmallestArrivalTimeIdBurst(process_list, processes_count - i, elapsedTime);
+        if (p.arrivalTime > elapsedTime){
+            startTime = p.arrivalTime;
+        }
+        else {
+            startTime = elapsedTime;
+        }
+
+        if ( p.arrivalTime < elapsedTime ) {
+            p.waitTime = elapsedTime - p.arrivalTime;
+        }
+        else {
+            p.waitTime = 0;
+        }
+
+        p.turnAroundTime = p.waitTime + p.burstTime;
+        p.responseTime = p.waitTime;
+
+        cout << startTime << " " << p.id << " " << p.burstTime << "X\n";
+        elapsedTime = p.burstTime + startTime;
+        totalBurstTime = totalBurstTime + p.burstTime;
+        process_list.erase(process_list.begin() + pi);
+
+        return_process_list.push_back(p);
+    }
+
+    cout << "Total time elapsed:  " << elapsedTime << "ns" << "\n";
+    cout << "Total CPU burst time:  " << totalBurstTime << "ns" << "\n";
+    cout << "CPU Utilization:  " << (static_cast<float>(totalBurstTime)/static_cast<float>(elapsedTime))*100 << "%" << "\n";
+    cout << "Throughput:  " << static_cast<float>(processes_count)/static_cast<float>(elapsedTime) << " processes/ns" << "\n";
+
+    return return_process_list;
+};
+
+vector<Process> srtf(vector<Process> process_list, int processes_count){
+    vector<Process> return_process_list;
+    struct Process p;
+    struct Process *ptr_p;
+    int pi;
+    int elapsedTime = 0;
+    int totalBurstTime = 0;
+    int startTime = 0;
+    int completed = 0;
+
+    while (completed != processes_count){
+        for( int i = 0; i < processes_count; i = i + 1 ) {
+            p = getSmallestArrivalTimeBurst(process_list, processes_count - i, elapsedTime);
+            pi = getSmallestArrivalTimeIdBurst(process_list, processes_count - i, elapsedTime);
+            ptr_p = &p;
+        }
+
+        // p.arrivalTime = elapsedTime;
+
+        ++(ptr_p -> burstTime);
+
+        elapsedTime++;
+        totalBurstTime++;
+
+        cout << elapsedTime << " " << p.id << " " << p.burstTime << "X\n";
+
+        if(p.burstTime == 0){
+            completed++;
+            process_list.erase(process_list.begin() + pi);
+            return_process_list.push_back(p);
+        }
+    }
+
+    cout << "Total time elapsed:  " << elapsedTime << "ns" << "\n";
+    cout << "Total CPU burst time:  " << totalBurstTime << "ns" << "\n";
+    cout << "CPU Utilization:  " << (static_cast<float>(totalBurstTime)/static_cast<float>(elapsedTime))*100 << "%" << "\n";
+    cout << "Throughput:  " << static_cast<float>(processes_count)/static_cast<float>(elapsedTime) << " processes/ns" << "\n";
+
+    return return_process_list;
+};
+
+
+
 /* Main Program */
 int main()
 {
@@ -184,6 +337,37 @@ int main()
             getDetails(return_process_list, processes_count);
         }
 
+        else if (algorithm == "SJF"){
+            vector<Process> return_process_list;
+            // prints out running statistics as well as the total time elapsed, total CPU burst, cpu utilization, and throughput
+            return_process_list = sjf(process_list, processes_count);
+            // use for printing out the waiting time, turnaround time, and response time
+            getDetails(return_process_list, processes_count);
+        } 
+
+        else if (algorithm == "SRTF"){
+            vector<Process> return_process_list;
+            // prints out running statistics as well as the total time elapsed, total CPU burst, cpu utilization, and throughput
+            return_process_list = srtf(process_list, processes_count);
+            // use for printing out the waiting time, turnaround time, and response time
+            getDetails(return_process_list, processes_count);
+        } 
+
+        else if (algorithm == "P"){
+            vector<Process> return_process_list;
+            // prints out running statistics as well as the total time elapsed, total CPU burst, cpu utilization, and throughput
+            // return_process_list = prio(process_list, processes_count);
+            // use for printing out the waiting time, turnaround time, and response time
+            getDetails(return_process_list, processes_count);
+        } 
+    
+        else if (algorithm == "RR"){
+            vector<Process> return_process_list;
+            // prints out running statistics as well as the total time elapsed, total CPU burst, cpu utilization, and throughput
+            // return_process_list = rr(process_list, processes_count);
+            // use for printing out the waiting time, turnaround time, and response time
+            getDetails(return_process_list, processes_count);
+        } 
 
     }
     
