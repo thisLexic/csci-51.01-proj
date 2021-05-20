@@ -310,6 +310,7 @@ def PRIO(process_list):
     elapsed_time = 0
     total_burst_time = 0
     time_before_processing = 0
+    previous_tbp = 0
 
     process_count = len(process_list)
 
@@ -349,6 +350,8 @@ def PRIO(process_list):
             # Checks if new element can be added
             for p in process_list[:]:
                 previous_shortest = ready_queue[0]
+                previous_tbp = time_before_processing
+
                 if p[1] <= elapsed_time:
                     time_before_processing = elapsed_time
 
@@ -359,7 +362,7 @@ def PRIO(process_list):
                 
                 # If new shortest
                 if previous_shortest[0] != ready_queue[0][0]:
-                    print(previous_shortest[7]," ",previous_shortest[0]," ",elapsed_time, sep="")
+                    print(previous_tbp," ",previous_shortest[0]," ",time_before_processing-previous_tbp, sep="")
                 
         else:
             elapsed_time += 1
