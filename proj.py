@@ -192,30 +192,37 @@ def RR(process_list, time_quantum):
         # Adds all viable processes in round robin queue
         for p in process_list[:]:
             if p[1] <= elapsed_time and p[9] == 0:
+
                 p[9] = 1 # Flag Bit
+                p[7] = p[1] # Start Time
+
                 arrival_queue.append(p)
                 process_list.remove(p)
-                # print("Process",p[0], "added to ready queue at", elapsed_time, "entered with the state", p)
+                print("Process",p[0], "added to ready queue at", elapsed_time, "entered with the state", p)
 
         if len(arrival_queue) != 0:
             for p in arrival_queue:
-                # print("Process",p[0], "at", elapsed_time, "entered arrival queue with the state", p)
+                print("Process",p[0], "at", elapsed_time, "entered arrival queue with the state", p)
+                
+                if p[6] == -1:
+                    p[6] = elapsed_time - p[7] # Response Time
+
                 time_before_processing = elapsed_time
-                # p[10] = 1
+                
                 for i in range(time_quantum):
                     p[2] -= 1
                     elapsed_time += 1
                     total_burst_time += 1
                     if p[2] == 0:
                         print(time_before_processing," ",p[0]," ",elapsed_time-time_before_processing, "X", sep="")
-                        # print("Process",p[0], "terminated at:", elapsed_time)
+
                         p[5] = elapsed_time - p[1] # Turnaround Time
                         terminated.append(p)
                         arrival_queue.remove(p)
                         break
 
                 if p[2]>0:
-                        # print("Process",p[0], "at", elapsed_time, "added to rr queue from arrival", p)
+                        print("Process",p[0], "at", elapsed_time, "added to rr queue from arrival", p)
                         round_robin_queue.append(p)
                         arrival_queue.remove(p)
 
@@ -223,7 +230,8 @@ def RR(process_list, time_quantum):
             for p in round_robin_queue[:]:
 
                 if p[10] == 0:
-                    # print("Process",p[0], "at", elapsed_time, "entered if with the state", p)
+
+                    print("Process",p[0], "at", elapsed_time, "entered if with the state", p)
                     p[9] = 0 # Arrival Queue Bit
                     p[10] = 1 # Passed Bit
                     time_before_processing = elapsed_time
@@ -238,7 +246,7 @@ def RR(process_list, time_quantum):
                             terminated.append(p)
                             round_robin_queue.remove(p)
                             break
-                    # print("Process",p[0], "at", elapsed_time, "exited if with the state", p)
+                    print("Process",p[0], "at", elapsed_time, "exited if with the state", p)
 
                 else:
                     # print("Process",p[0], "at", elapsed_time, "entered else")
@@ -259,17 +267,15 @@ def RR(process_list, time_quantum):
                 for p in process_list[:]:
                     if p[1] <= elapsed_time and p[9] == 0:
                         p[9] = 1 # Flag Bit
+                        p[7] = p[1] # Start Time
         
                         arrival_queue.append(p)
                         process_list.remove(p)
-                        # print("Process",p[0], "added to arrival queue at", elapsed_time, "entered with the state", p)
+                        print("Process",p[0], "added to arrival queue at", elapsed_time, "entered with the state", p)
                     
                 if(len(arrival_queue)>0):
                     break
                 
-
-
- 
         else:
             elapsed_time += 1
 
@@ -291,7 +297,7 @@ if __name__ =="__main__":
             # Process ID [0], Arrival Time [1], Burst Time [2], Priority [3], Wait Time [4], 
             # Turnaround Time [5], Response Time [6], Start Time [7], Finish Time [8], Flag Bit [9], Terminated [10]
             processes.append([j+1]+list(map(int, input().split()))
-+[0,0,0,0,0,0,0])
++[0,-1,-1,-1,0,0,0])
         
         print(str(i+1), ". ", s[1], sep="")
 
