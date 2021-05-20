@@ -177,8 +177,8 @@ def SRTF(process_list):
     print("Throughput: ", (process_count/elapsed_time), "processes/ns", sep="")
     get_details(terminated)
 
-
 def RR(process_list, time_quantum):
+
     round_robin_queue = []
     arrival_queue = []
     terminated = []
@@ -275,9 +275,6 @@ def RR(process_list, time_quantum):
                             p[10] = 0
                         break
 
-
-                # print(p[7], " ", p[0], " ", p[2],"", sep="")
-
                 # Check if there are new processes to be added to the round robin queue
                 for p in process_list[:]:
                     if p[1] <= elapsed_time and p[9] == 0:
@@ -307,6 +304,79 @@ def RR(process_list, time_quantum):
     print("Throughput: ", (process_count/elapsed_time), " processes/ns", sep="")
     get_details(terminated)
 
+def PRIO(process_list):
+    ready_queue = []
+    terminated = []
+
+    elapsed_time = 0
+    total_burst_time = 0
+    time_before_processing = 0
+
+    process_count = len(process_list)
+
+    original_burst_times = []
+    for p in process_list:
+        original_burst_times.append(p[2])
+
+    while len(terminated) != process_count:
+        for p in process_list[:]:
+            if p[1] <= elapsed_time:
+                p[7] = elapsed_time # Start Time
+                ready_queue.append(p)
+                process_list.remove(p)
+                ready_queue = sorted(ready_queue, key=lambda x: x[3])
+        
+        if len(ready_queue) != 0:
+
+            if ready_queue[0][6] == -1:
+                    ready_queue[0][6] = elapsed_time - ready_queue[0][7] # Response Time
+
+            ready_queue[0][2] -= 1
+            elapsed_time += 1
+            total_burst_time += 1
+
+            if ready_queue[0][2] == 0:
+
+                ready_queue[0][8] = elapsed_time # End Time
+                ready_queue[0][5] = ready_queue[0][8] - ready_queue[0][7] # Turnaround Time
+
+                print(time_before_processing," ",ready_queue[0][0]," ",elapsed_time-time_before_processing,"X",sep="")
+
+                terminated.append(ready_queue[0])
+                ready_queue.pop(0)
+
+                time_before_processing = elapsed_time
+
+            # Checks if new element can be added
+            for p in process_list[:]:
+                previous_shortest = ready_queue[0]
+                if p[1] <= elapsed_time:
+                    time_before_processing = elapsed_time
+
+                    p[7] = elapsed_time # Start Time
+                    ready_queue.append(p)
+                    process_list.remove(p)
+                    ready_queue = sorted(ready_queue, key=lambda x: x[3])
+                
+                # If new shortest
+                if previous_shortest[0] != ready_queue[0][0]:
+                    print(previous_shortest[7]," ",previous_shortest[0]," ",elapsed_time, sep="")
+                
+        else:
+            elapsed_time += 1
+
+    terminated = sorted(terminated, key=lambda x: x[0])
+    # Waiting Time
+    for i in range(process_count):
+        terminated[i][4] = terminated[i][5] - original_burst_times[i]
+        
+    print("Total time elapsed: ", elapsed_time, "ns", sep="")
+    print("Total CPU burst time: ", total_burst_time, "ns", sep="")
+    print("CPU Utilization: ", (total_burst_time/elapsed_time)*100, "%", sep="")
+    print("Throughput: ", (process_count/elapsed_time), " processes/ns", sep="")
+    get_details(terminated)
+
+
 
 if __name__ =="__main__":
     t = int(input("Enter number of test cases: "))
@@ -318,8 +388,7 @@ if __name__ =="__main__":
         for j in range(int(s[0])):
             # Process ID [0], Arrival Time [1], Burst Time [2], Priority [3], Wait Time [4], 
             # Turnaround Time [5], Response Time [6], Start Time [7], Finish Time [8], Flag Bit [9], Terminated [10]
-            processes.append([j+1]+list(map(int, input().split()))
-+[0,-1,-1,-1,0,0,0])
+            processes.append([j+1]+list(map(int, input().split()))+[0,-1,-1,-1,0,0,0])
         
         print(str(i+1), ". ", s[1], sep="")
 
@@ -332,8 +401,8 @@ if __name__ =="__main__":
         elif(s[1] == "SRTF"):
             SRTF(processes)
 
-        # elif(s[1] == "P"):
-        #     PRIO(processes)
+        elif(s[1] == "P"):
+            PRIO(processes)
         
         elif(s[1] == "RR"):
             RR(processes, int(s[2]))
