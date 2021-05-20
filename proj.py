@@ -180,6 +180,7 @@ def SRTF(process_list):
 
 def RR(process_list, time_quantum):
     round_robin_queue = []
+    arrival_queue = []
     terminated = []
 
     elapsed_time = 0
@@ -189,37 +190,61 @@ def RR(process_list, time_quantum):
 
     while len(terminated) != process_count:
         # Adds all viable processes in round robin queue
-        for p in process_list:
+        for p in process_list[:]:
             if p[1] <= elapsed_time and p[9] == 0:
                 p[9] = 1 # Flag Bit
-                round_robin_queue.append(p)
-                print("Process",p[0], "added to ready queue at", elapsed_time, "entered with the state", p)
+                arrival_queue.append(p)
+                process_list.remove(p)
+                # print("Process",p[0], "added to ready queue at", elapsed_time, "entered with the state", p)
 
-        if len(round_robin_queue) != 0:
+        if len(arrival_queue) != 0:
+            for p in arrival_queue:
+                # print("Process",p[0], "at", elapsed_time, "entered arrival queue with the state", p)
+                time_before_processing = elapsed_time
+                # p[10] = 1
+                for i in range(time_quantum):
+                    p[2] -= 1
+                    elapsed_time += 1
+                    if p[2] == 0:
+                        print(time_before_processing," ",p[0]," ",elapsed_time-time_before_processing, "X", sep="")
+                        # print("Process",p[0], "terminated at:", elapsed_time)
+                        terminated.append(p)
+                        arrival_queue.remove(p)
+                        break
+
+                if p[2]>0:
+                        # print("Process",p[0], "at", elapsed_time, "added to rr queue from arrival", p)
+                        round_robin_queue.append(p)
+                        arrival_queue.remove(p)
+
+        elif len(round_robin_queue) != 0:
             for p in round_robin_queue[:]:
 
                 if p[10] == 0:
-                    print("Process",p[0], "at", elapsed_time, "entered if with the state", p)
-                    p[10] = 1
+                    # print("Process",p[0], "at", elapsed_time, "entered if with the state", p)
+                    p[9] = 0 # Arrival Queue Bit
+                    p[10] = 1 # Passed Bit
+                    time_before_processing = elapsed_time
                     for i in range(time_quantum):
                         p[2] -= 1
                         elapsed_time += 1
                         if p[2] == 0:
-                            print("Process",p[0], "terminated at:", elapsed_time)
+                            print(time_before_processing," ",p[0]," ",elapsed_time-time_before_processing, "X", sep="")
+                            # print("Process",p[0], "terminated at:", elapsed_time)
                             terminated.append(p)
                             round_robin_queue.remove(p)
                             break
-                    print("Process",p[0], "at", elapsed_time, "exited if with the state", p)
+                    # print("Process",p[0], "at", elapsed_time, "exited if with the state", p)
 
                 else:
-                    print("Process",p[0], "at", elapsed_time, "entered else")
+                    # print("Process",p[0], "at", elapsed_time, "entered else")
                     elements_passed = 0
                     for p in round_robin_queue:
                         elements_passed += p[10]
                     if elements_passed == len(round_robin_queue):
-                        print("Process",p[0], "at", elapsed_time, "RESET THE QUEUE")
+                        # print("Process",p[0], "at", elapsed_time, "RESET THE QUEUE")
                         for p in round_robin_queue:
-                            print("Process",p[0], "'s p[10] modified at:", elapsed_time)
+                            # print("Process",p[0], "'s p[10] modified at:", elapsed_time)
                             p[10] = 0
                         break
 
@@ -227,32 +252,46 @@ def RR(process_list, time_quantum):
                 # print(p[7], " ", p[0], " ", p[2],"", sep="")
 
                 # Check if there are new processes to be added to the round robin queue
-                for p in process_list:
+                for p in process_list[:]:
                     if p[1] <= elapsed_time and p[9] == 0:
                         p[9] = 1 # Flag Bit
         
-                        round_robin_queue.append(p)
-                        print("Process",p[0], "added to ready queue at", elapsed_time, "entered with the state", p)
-                        
-                        print("Process",p[0], "at", elapsed_time, "entered arrival queue with the state", p)
-                        p[10] = 1
-                        for i in range(time_quantum):
-                            p[2] -= 1
-                            elapsed_time += 1
-                            if p[2] == 0:
-                                print("Process",p[0], "terminated at:", elapsed_time)
-                                terminated.append(p)
-                                round_robin_queue.remove(p)
-                                break
+                        arrival_queue.append(p)
+                        process_list.remove(p)
+                        # print("Process",p[0], "added to arrival queue at", elapsed_time, "entered with the state", p)
+                    
+                if(len(arrival_queue)>0):
+                    break
+                
+
+
  
         else:
             elapsed_time += 1
-        
-        print("RR queue: ", round_robin_queue, "at", elapsed_time)
-        print("Terminated:", terminated, "at", elapsed_time)
+
+        # print("\nArrival queue: ", arrival_queue, "at", elapsed_time)
+        # print("RR queue: ", round_robin_queue, "at", elapsed_time)
+        # print("Terminated:", terminated, "at", elapsed_time)
+        # print("\n")
 
 
+# def RR2(process_list, time_quantum):
 
+#     arrival_queue = []
+#     round_robin_queue = []
+#     terminated_queue = []
+
+#     elapsed_time = 0
+#     total_burst_time = 0
+
+#     process_count = len(process_list)
+
+#     while len(terminated_queue) != process_count:
+#         for p in process_list[:]:
+#             if p[1] <= elapsed_time:
+#                 arrival_queue.append(p)
+#                 process_list.remove(p)
+                    
 
 
 
