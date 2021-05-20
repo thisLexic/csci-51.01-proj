@@ -73,7 +73,7 @@ def FCFS(process_list):
     print("Total time elapsed: ", elapsed_time, "ns", sep="")
     print("Total CPU burst time: ", total_burst_time, "ns", sep="")
     print("CPU Utilization: ", (total_burst_time/elapsed_time)*100, "%", sep="")
-    print("Throughput: ", (process_count/elapsed_time), "processes/ns", sep="")
+    print("Throughput: ", (process_count/elapsed_time), " processes/ns", sep="")
     get_details(terminated)
 
 def SJF(process_list):
@@ -128,7 +128,7 @@ def SJF(process_list):
     print("Total time elapsed: ", elapsed_time, "ns", sep="")
     print("Total CPU burst time: ", total_burst_time, "ns", sep="")
     print("CPU Utilization: ", (total_burst_time/elapsed_time)*100, "%", sep="")
-    print("Throughput: ", (process_count/elapsed_time), "processes/ns", sep="")
+    print("Throughput: ", (process_count/elapsed_time), " processes/ns", sep="")
     get_details(terminated)
 
 def SRTF(process_list):
@@ -205,9 +205,11 @@ def RR(process_list, time_quantum):
                 for i in range(time_quantum):
                     p[2] -= 1
                     elapsed_time += 1
+                    total_burst_time += 1
                     if p[2] == 0:
                         print(time_before_processing," ",p[0]," ",elapsed_time-time_before_processing, "X", sep="")
                         # print("Process",p[0], "terminated at:", elapsed_time)
+                        p[5] = elapsed_time - p[1] # Turnaround Time
                         terminated.append(p)
                         arrival_queue.remove(p)
                         break
@@ -227,10 +229,12 @@ def RR(process_list, time_quantum):
                     time_before_processing = elapsed_time
                     for i in range(time_quantum):
                         p[2] -= 1
+                        total_burst_time += 1
                         elapsed_time += 1
                         if p[2] == 0:
                             print(time_before_processing," ",p[0]," ",elapsed_time-time_before_processing, "X", sep="")
                             # print("Process",p[0], "terminated at:", elapsed_time)
+                            p[5] = elapsed_time - p[1] # Turnaround Time
                             terminated.append(p)
                             round_robin_queue.remove(p)
                             break
@@ -269,30 +273,11 @@ def RR(process_list, time_quantum):
         else:
             elapsed_time += 1
 
-        # print("\nArrival queue: ", arrival_queue, "at", elapsed_time)
-        # print("RR queue: ", round_robin_queue, "at", elapsed_time)
-        # print("Terminated:", terminated, "at", elapsed_time)
-        # print("\n")
-
-
-# def RR2(process_list, time_quantum):
-
-#     arrival_queue = []
-#     round_robin_queue = []
-#     terminated_queue = []
-
-#     elapsed_time = 0
-#     total_burst_time = 0
-
-#     process_count = len(process_list)
-
-#     while len(terminated_queue) != process_count:
-#         for p in process_list[:]:
-#             if p[1] <= elapsed_time:
-#                 arrival_queue.append(p)
-#                 process_list.remove(p)
-                    
-
+    print("Total time elapsed: ", elapsed_time, "ns", sep="")
+    print("Total CPU burst time: ", total_burst_time, "ns", sep="")
+    print("CPU Utilization: ", (total_burst_time/elapsed_time)*100, "%", sep="")
+    print("Throughput: ", (process_count/elapsed_time), " processes/ns", sep="")
+    get_details(terminated)
 
 
 if __name__ =="__main__":
