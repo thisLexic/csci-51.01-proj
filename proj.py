@@ -198,11 +198,12 @@ def RR(process_list, time_quantum):
 
                 arrival_queue.append(p)
                 process_list.remove(p)
-                print("Process",p[0], "added to ready queue at", elapsed_time, "entered with the state", p)
+                # print("Process",p[0], "added to ready queue at", elapsed_time, "entered with the state", p)
 
         if len(arrival_queue) != 0:
             for p in arrival_queue:
-                print("Process",p[0], "at", elapsed_time, "entered arrival queue with the state", p)
+                
+                # print("Process",p[0], "at", elapsed_time, "entered arrival queue with the state", p)
                 
                 if p[6] == -1:
                     p[6] = elapsed_time - p[7] # Response Time
@@ -220,9 +221,10 @@ def RR(process_list, time_quantum):
                         terminated.append(p)
                         arrival_queue.remove(p)
                         break
-
+                
                 if p[2]>0:
-                        print("Process",p[0], "at", elapsed_time, "added to rr queue from arrival", p)
+                        print(time_before_processing, p[0], elapsed_time-time_before_processing)
+                        # print("Process",p[0], "at", elapsed_time, "added to rr queue from arrival", p)
                         round_robin_queue.append(p)
                         arrival_queue.remove(p)
 
@@ -231,7 +233,7 @@ def RR(process_list, time_quantum):
 
                 if p[10] == 0:
 
-                    print("Process",p[0], "at", elapsed_time, "entered if with the state", p)
+                    # print("Process",p[0], "at", elapsed_time, "entered if with the state", p)
                     p[9] = 0 # Arrival Queue Bit
                     p[10] = 1 # Passed Bit
                     time_before_processing = elapsed_time
@@ -246,7 +248,11 @@ def RR(process_list, time_quantum):
                             terminated.append(p)
                             round_robin_queue.remove(p)
                             break
-                    print("Process",p[0], "at", elapsed_time, "exited if with the state", p)
+
+                    if p[2] > 0:
+                        print(time_before_processing, p[0], elapsed_time-time_before_processing)
+
+                    # print("Process",p[0], "at", elapsed_time, "exited if with the state", p)
 
                 else:
                     # print("Process",p[0], "at", elapsed_time, "entered else")
@@ -271,7 +277,7 @@ def RR(process_list, time_quantum):
         
                         arrival_queue.append(p)
                         process_list.remove(p)
-                        print("Process",p[0], "added to arrival queue at", elapsed_time, "entered with the state", p)
+                        # print("Process",p[0], "added to arrival queue at", elapsed_time, "entered with the state", p)
                     
                 if(len(arrival_queue)>0):
                     break
