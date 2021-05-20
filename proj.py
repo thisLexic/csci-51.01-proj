@@ -183,6 +183,10 @@ def RR(process_list, time_quantum):
     arrival_queue = []
     terminated = []
 
+    original_burst_times = []
+    for p in process_list:
+        original_burst_times.append(p[2])
+
     elapsed_time = 0
     total_burst_time = 0
 
@@ -224,6 +228,9 @@ def RR(process_list, time_quantum):
                 
                 if p[2]>0:
                         print(time_before_processing, p[0], elapsed_time-time_before_processing)
+
+                        # p[4] = elapsed_time-time_before_processing # Waiting Time
+
                         # print("Process",p[0], "at", elapsed_time, "added to rr queue from arrival", p)
                         round_robin_queue.append(p)
                         arrival_queue.remove(p)
@@ -248,6 +255,8 @@ def RR(process_list, time_quantum):
                             terminated.append(p)
                             round_robin_queue.remove(p)
                             break
+
+                        p[4] += elapsed_time-time_before_processing # Waiting Time
 
                     if p[2] > 0:
                         print(time_before_processing, p[0], elapsed_time-time_before_processing)
@@ -284,6 +293,13 @@ def RR(process_list, time_quantum):
                 
         else:
             elapsed_time += 1
+
+    terminated = sorted(terminated, key=lambda x: x[0])
+    # Waiting Time
+    for i in range(process_count):
+        terminated[i][4] = terminated[i][5] - original_burst_times[i]
+
+    # print(original_burst_times)
 
     print("Total time elapsed: ", elapsed_time, "ns", sep="")
     print("Total CPU burst time: ", total_burst_time, "ns", sep="")
