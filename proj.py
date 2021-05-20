@@ -131,7 +131,6 @@ def SJF(process_list):
     print("Throughput: ", (process_count/elapsed_time), " processes/ns", sep="")
     get_details(terminated)
 
-def SRTF(process_list):
     ready_queue = []
     terminated = []
 
@@ -329,7 +328,7 @@ def PRIO(process_list):
         if len(ready_queue) != 0:
 
             if ready_queue[0][6] == -1:
-                    ready_queue[0][6] = elapsed_time - ready_queue[0][7] # Response Time
+                ready_queue[0][6] = elapsed_time - ready_queue[0][7] # Response Time
 
             ready_queue[0][2] -= 1
             elapsed_time += 1
@@ -369,14 +368,85 @@ def PRIO(process_list):
     # Waiting Time
     for i in range(process_count):
         terminated[i][4] = terminated[i][5] - original_burst_times[i]
-        
+
     print("Total time elapsed: ", elapsed_time, "ns", sep="")
     print("Total CPU burst time: ", total_burst_time, "ns", sep="")
     print("CPU Utilization: ", (total_burst_time/elapsed_time)*100, "%", sep="")
     print("Throughput: ", (process_count/elapsed_time), " processes/ns", sep="")
     get_details(terminated)
 
+def SRTF(process_list):
+    ready_queue = []
+    terminated = []
 
+    elapsed_time = 0
+    total_burst_time = 0
+    time_before_processing = 0
+    previous_tbp = 0
+
+    process_count = len(process_list)
+
+    original_burst_times = []
+    for p in process_list:
+        original_burst_times.append(p[2])
+
+    while len(terminated) != process_count:
+        for p in process_list[:]:
+            if p[1] <= elapsed_time:
+                p[7] = elapsed_time # Start Time
+                ready_queue.append(p)
+                process_list.remove(p)
+                ready_queue = sorted(ready_queue, key=lambda x: x[2])
+        
+        if len(ready_queue) != 0:
+            if ready_queue[0][6] == -1:
+                ready_queue[0][6] = elapsed_time - ready_queue[0][7] # Response Time
+
+            ready_queue[0][2] -= 1
+            elapsed_time += 1
+            total_burst_time += 1
+
+            if ready_queue[0][2] == 0:
+
+                ready_queue[0][8] = elapsed_time # End Time
+                ready_queue[0][5] = ready_queue[0][8] - ready_queue[0][7] # Turnaround Time
+
+                print(time_before_processing," ",ready_queue[0][0]," ",elapsed_time-time_before_processing,"X",sep="")
+
+                terminated.append(ready_queue[0])
+                ready_queue.pop(0)
+
+                time_before_processing = elapsed_time
+
+            # Checks if new element can be added
+            for p in process_list[:]:
+                previous_shortest = ready_queue[0]
+                previous_tbp = time_before_processing
+                if p[1] <= elapsed_time:
+                    time_before_processing = elapsed_time
+
+                    p[7] = elapsed_time # Start Time
+                    ready_queue.append(p)
+                    process_list.remove(p)
+                    ready_queue = sorted(ready_queue, key=lambda x: x[2])
+                
+                # If new shortest
+                if previous_shortest[0] != ready_queue[0][0]:
+                    print(previous_tbp," ",previous_shortest[0]," ",time_before_processing-previous_tbp, sep="")
+                
+        else:
+            elapsed_time += 1
+
+    terminated = sorted(terminated, key=lambda x: x[0])
+    # Waiting Time
+    for i in range(process_count):
+        terminated[i][4] = terminated[i][5] - original_burst_times[i]
+
+    print("Total time elapsed: ", elapsed_time, "ns", sep="")
+    print("Total CPU burst time: ", total_burst_time, "ns", sep="")
+    print("CPU Utilization: ", (total_burst_time/elapsed_time)*100, "%", sep="")
+    print("Throughput: ", (process_count/elapsed_time), " processes/ns", sep="")
+    get_details(terminated)
 
 if __name__ =="__main__":
     t = int(input("Enter number of test cases: "))
