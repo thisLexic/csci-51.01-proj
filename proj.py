@@ -425,7 +425,7 @@ def SRTF(process_list):
             for p in process_list[:]:
                 previous_shortest = ready_queue[0]
                 previous_tbp = time_before_processing
-                if p[1] <= elapsed_time:
+                if p[1] <= elapsed_time and previous_shortest[2] > p[2]:
                     time_before_processing = elapsed_time
 
                     p[7] = elapsed_time # Start Time
