@@ -134,46 +134,6 @@ def SJF(process_list):
     print("Throughput: ", (process_count/elapsed_time), " processes/ns", sep="")
     get_details(terminated)
 
-    ready_queue = []
-    terminated = []
-
-    elapsed_time = 0
-    # completed = 0
-    total_burst_time = 0
-
-    process_count = len(process_list)
-
-    # process_list = sorted(process_list, key=lambda x: x[2])
-
-    while len(terminated) != process_count:
-        for p in process_list:
-            if p[1] <= elapsed_time:
-                ready_queue.append(p)
-                process_list.remove(p)
-
-        ready_queue = sorted(ready_queue, key=lambda x: x[2])   
-        if (len(ready_queue) != 0):
-            previous_burst_pid = ready_queue[0][0]
-         
-            # Shortest burst changed in ready queue changed
-            if (previous_burst_pid != ready_queue[0][0]):
-                print(p[7], " ", p[0], " ", p[2],"X", sep="")
-
-            ready_queue[0][2] -= 1
-            elapsed_time += 1
-
-            
-
-            if(ready_queue[0][2]==0):
-                terminated.append(ready_queue[0])
-                ready_queue.remove(ready_queue[0])
-
-    print("Total time elapsed: ", elapsed_time, "ns", sep="")
-    print("Total CPU burst time: ", total_burst_time, "ns", sep="")
-    print("CPU Utilization: ", (total_burst_time/elapsed_time)*100, "%", sep="")
-    print("Throughput: ", (process_count/elapsed_time), "processes/ns", sep="")
-    get_details(terminated)
-
 def RR(process_list, time_quantum):
 
     round_robin_queue = []
@@ -350,7 +310,7 @@ def PRIO(process_list):
                 previous_shortest = ready_queue[0]
                 previous_tbp = time_before_processing
 
-                if p[1] <= elapsed_time:
+                if p[1] <= elapsed_time and previous_shortest[2] > p[2]:
                     time_before_processing = elapsed_time
 
                     p[7] = elapsed_time # Start Time
