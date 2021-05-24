@@ -310,14 +310,14 @@ def PRIO(process_list):
                 previous_shortest = ready_queue[0]
                 previous_tbp = time_before_processing
 
-                if p[1] <= elapsed_time and previous_shortest[2] > p[2]:
+                if p[1] <= elapsed_time and previous_shortest[3] > p[3]:
+                    
                     time_before_processing = elapsed_time
-
                     p[7] = elapsed_time # Start Time
                     ready_queue.append(p)
                     process_list.remove(p)
                     ready_queue = sorted(ready_queue, key=lambda x: x[3])
-                
+
                 # If new shortest
                 if previous_shortest[0] != ready_queue[0][0]:
                     print(previous_tbp," ",previous_shortest[0]," ",time_before_processing-previous_tbp, sep="")
